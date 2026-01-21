@@ -1,16 +1,14 @@
-function MyButton({title} : {title : string}) {
-  return (
-    <button>{title}</button>
-  );
-}
-
-export default function MyApp() {
+export default function loginPage() {
   return (
     <div>
-      <h1>Welcome to my app</h1>
-      <MyButton title="I'm a button"/>
-      <MyButton title="I'm another button"/>
-      <MyButton title="I'm the third button"/>
+    <div className="flex justify-center m-20">
+      <h1 className="space-x-5 font-mono text-5xl">Univa</h1>
+      </div>
+      <h2>Login</h2>
+      <input type="text" />
+      <input type="password" />
+      <button className="btn">Submit</button>
+      <a href="">Forget Password</a>
     </div>
   );
 }
