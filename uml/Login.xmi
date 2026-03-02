@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xmi:XMI xmi:version="2.1" xmlns:xmi="http://schema.omg.org/spec/XMI/2.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:uml="http://schema.omg.org/spec/UML/2.1">
-  <xmi:Documentation exporter="umbrello uml modeller 25.12.1 http://umbrello.kde.org" exporterVersion="2.0.4"/>
+  <xmi:Documentation exporter="umbrello uml modeller 25.12.2 http://umbrello.kde.org" exporterVersion="2.0.4"/>
   <uml:Model xmi:id="m1" name="UML Model">
     <packagedElement xmi:type="uml:Stereotype" xmi:id="folder" name="folder"/>
     <packagedElement xmi:type="uml:Stereotype" xmi:id="dataType" name="dataType"/>
@@ -53,7 +53,7 @@
           <diagram xmi.id="uDpDMpArussHA" name="class diagram" type="1" documentation="" backgroundcolor="#ffffff" usebackgroundcolor="0" fillcolor="#ffffc0" font="Sans Serif,9,-1,5,400,0,0,0,0,0,0,0,0,0,0,1" griddotcolor="#d3d3d3" linecolor="#990000" linewidth="0" textcolor="#000000" usefillcolor="1" usealignmentguides="1" showattribassocs="1" showatts="1" showattsig="1" showops="1" showopsig="1" showpackage="1" showpubliconly="0" showscope="1" showstereotype="2" localid="-1" showgrid="0" snapgrid="0" snapcsgrid="0" snapx="25" snapy="25" zoom="100" canvasheight="800" canvaswidth="1100" isopen="1">
             <widgets>
               <classwidget xmi.id="uWVhUGs5Boq6L" localid="u0Abg5JWbUdt8" textcolor="#000000" linecolor="#990000" linewidth="0" usefillcolor="1" usesdiagramfillcolor="0" usesdiagramusefillcolor="0" fillcolor="#ffffc0" font="Sans Serif,9,-1,5,400,0,0,0,0,0,0,0,0,0,0,1" autoresize="0" x="313" y="211" width="248" height="176" isinstance="0" showstereotype="2" showoperations="1" showpubliconly="0" showopsigs="601" showpackage="1" showscope="1" showattributes="1" showattsigs="601"/>
-              <classwidget xmi.id="uv6Mly80Yjnzg" localid="ux1h03Gahe3TU" textcolor="#000000" linecolor="#990000" linewidth="0" usefillcolor="1" usesdiagramfillcolor="0" usesdiagramusefillcolor="0" fillcolor="#ffffc0" font="Sans Serif,9,-1,5,400,0,0,0,0,0,0,0,0,0,0,1" autoresize="0" x="736" y="244" width="280" height="110" isinstance="0" showstereotype="2" showoperations="1" showpubliconly="0" showopsigs="601" showpackage="1" showscope="1" showattributes="1" showattsigs="601"/>
+              <classwidget xmi.id="uv6Mly80Yjnzg" localid="ux1h03Gahe3TU" textcolor="#000000" linecolor="#990000" linewidth="0" usefillcolor="1" usesdiagramfillcolor="0" usesdiagramusefillcolor="0" fillcolor="#ffffc0" font="Sans Serif,9,-1,5,400,0,0,0,0,0,0,0,0,0,0,1" autoresize="0" x="736" y="244" width="291" height="110" isinstance="0" showstereotype="2" showoperations="1" showpubliconly="0" showopsigs="601" showpackage="1" showscope="1" showattributes="1" showattsigs="601"/>
             </widgets>
             <messages/>
             <associations>
@@ -178,10 +178,8 @@
       <packagedElement xmi:type="uml:Entity" xmi:id="u1vZGG2Clb1n4" name="User"/>
       <xmi:Extension extender="umbrello">
         <diagrams resolution="96">
-          <diagram xmi.id="ujyC1oOy7lXEZ" name="entity relationship diagram" type="9" documentation="" backgroundcolor="#ffffff" usebackgroundcolor="0" fillcolor="#ffffc0" font="Sans Serif,9,-1,5,400,0,0,0,0,0,0,0,0,0,0,1" griddotcolor="#d3d3d3" linecolor="#990000" linewidth="0" textcolor="#000000" usefillcolor="1" usealignmentguides="1" showattribassocs="1" showatts="1" showattsig="1" showops="1" showopsig="1" showpackage="1" showpubliconly="0" showscope="1" showstereotype="2" localid="-1" showgrid="0" snapgrid="0" snapcsgrid="0" snapx="25" snapy="25" zoom="100" canvasheight="800" canvaswidth="1100" isopen="0">
-            <widgets>
-              <entitywidget xmi.id="u1vZGG2Clb1n4" localid="uG4U5GIQysylP" textcolor="#000000" linecolor="#990000" linewidth="0" usefillcolor="1" usesdiagramfillcolor="0" usesdiagramusefillcolor="0" fillcolor="#ffffc0" font="Sans Serif,9,-1,5,400,0,0,0,0,0,0,0,0,0,0,1" autoresize="1" x="245" y="324" width="39" height="22" isinstance="0" showstereotype="2" showattsigs="0"/>
-            </widgets>
+          <diagram xmi.id="ujyC1oOy7lXEZ" name="entity relationship diagram" type="9" documentation="" backgroundcolor="#ffffff" usebackgroundcolor="0" fillcolor="#ffffc0" font="Sans Serif,9,-1,5,400,0,0,0,0,0,0,0,0,0,0,1" griddotcolor="#d3d3d3" linecolor="#990000" linewidth="0" textcolor="#000000" usefillcolor="1" usealignmentguides="1" showattribassocs="1" showatts="1" showattsig="1" showops="1" showopsig="1" showpackage="1" showpubliconly="0" showscope="1" showstereotype="2" localid="-1" showgrid="0" snapgrid="0" snapcsgrid="0" snapx="25" snapy="25" zoom="100" canvasheight="800" canvaswidth="1100" isopen="1">
+            <widgets/>
             <messages/>
             <associations/>
           </diagram>
@@ -190,7 +188,7 @@
     </packagedElement>
   </uml:Model>
   <xmi:Extension extender="umbrello">
-    <docsettings viewid="uxPuCwqyhSl7I" documentation="" uniqueid="urF7jGea9LxhX"/>
+    <docsettings viewid="ujyC1oOy7lXEZ" documentation="" uniqueid="uYVZIAO7zjoUc"/>
     <listview>
       <listitem id="Views" type="800" open="1">
         <listitem id="Component_View" type="821" open="1"/>
