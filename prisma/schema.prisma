@@ -1,20 +1,460 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
-  provider = "prisma-client"
-  output   = "../lib/generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "postgresql"
 }
 
+// ─────────────────────────────────────────────
+// ENUMS
+// ─────────────────────────────────────────────
+
+enum Role {
+  STUDENT
+  PROFESSOR
+  LIBRARIAN
+  COOK
+  CANTEEN_SERVER
+  ADMIN
+}
+
+enum AttendanceStatus {
+  PRESENT
+  ABSENT
+  LATE
+}
+
+enum BookStatus {
+  AVAILABLE
+  ON_LOAN
+  REFERENCE_ONLY
+  LOST
+  DAMAGED
+}
+
+enum LoanStatus {
+  ACTIVE
+  RETURNED
+  OVERDUE
+}
+
+enum OrderStatus {
+  PLACED
+  CONFIRMED
+  PREPARING
+  READY_FOR_PICKUP
+  SERVED
+  CANCELLED
+}
+
+enum OrderType {
+  DINE_IN
+  TAKEAWAY
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+  REFUNDED
+}
+
+enum FeeStatus {
+  PAID
+  DUE
+  PARTIAL
+}
+
+// ─────────────────────────────────────────────
+// CORE USER MODELS
+// ─────────────────────────────────────────────
+
 model User {
-  id Int @id @default(autoincrement())
-  email String @unique
-  password String
+  id               String    @id @default(cuid())
+  collegeId        String    @unique
+  email            String    @unique
+  passwordHash     String
+  role             Role
+  name             String
+  phone            String?
+  isActive         Boolean   @default(true)
+  lastLogin        DateTime?
+  securityQuestion String?
+  securityAnswer   String?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  student          Student?
+  professor        Professor?
+  sessions         Session[]
+  auditLogs        AuditLog[]
+  canteenOrders    CanteenOrder[]
+  walletBalance    Float     @default(0)
+  walletTx         WalletTransaction[]
+
+  @@index([collegeId])
+  @@index([role])
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique
+  ipAddress String?
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([token])
+}
+
+// ─────────────────────────────────────────────
+// STUDENT
+// ─────────────────────────────────────────────
+
+model Student {
+  id              String    @id @default(cuid())
+  userId          String    @unique
+  batch           String
+  semester        Int
+  department      String
+  programName     String
+
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  enrollments     Enrollment[]
+  attendances     Attendance[]
+  grades          Grade[]
+  feePayments     FeePayment[]
+  libraryAccount  LibraryAccount?
+  borrowings      BookLoan[]
+
+  @@index([userId])
+}
+
+// ─────────────────────────────────────────────
+// PROFESSOR
+// ─────────────────────────────────────────────
+
+model Professor {
+  id          String    @id @default(cuid())
+  userId      String    @unique
+  department  String
+  designation String
+
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  courses     Course[]
+
+  @@index([userId])
+}
+
+// ─────────────────────────────────────────────
+// ACADEMIC
+// ─────────────────────────────────────────────
+
+model AcademicTerm {
+  id         String    @id @default(cuid())
+  name       String    // e.g. "Odd Sem 2024-25"
+  startDate  DateTime
+  endDate    DateTime
+  isActive   Boolean   @default(false)
+
+  courses    Course[]
+  timetables Timetable[]
+}
+
+model Course {
+  id            String    @id @default(cuid())
+  code          String    @unique
+  name          String
+  credits       Int
+  department    String
+  termId        String
+  professorId   String
+
+  term          AcademicTerm @relation(fields: [termId], references: [id])
+  professor     Professor    @relation(fields: [professorId], references: [id])
+  enrollments   Enrollment[]
+  attendances   Attendance[]
+  grades        Grade[]
+  timetables    Timetable[]
+  gradeLocked   Boolean   @default(false)
+
+  @@index([professorId])
+  @@index([termId])
+}
+
+model Enrollment {
+  id         String   @id @default(cuid())
+  studentId  String
+  courseId   String
+  enrolledAt DateTime @default(now())
+
+  student    Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  course     Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@unique([studentId, courseId])
+  @@index([studentId])
+  @@index([courseId])
+}
+
+model Timetable {
+  id        String   @id @default(cuid())
+  courseId  String
+  termId    String
+  dayOfWeek Int      // 0=Mon … 6=Sun
+  startTime String   // "09:00"
+  endTime   String   // "10:00"
+  room      String?
+
+  course    Course       @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  term      AcademicTerm @relation(fields: [termId], references: [id])
+}
+
+model Attendance {
+  id          String           @id @default(cuid())
+  studentId   String
+  courseId    String
+  date        DateTime
+  timeSlot    String
+  status      AttendanceStatus
+  markedBy    String           // professor userId
+  editedAt    DateTime?
+  editReason  String?
+  createdAt   DateTime         @default(now())
+
+  student     Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  course      Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@unique([studentId, courseId, date, timeSlot])
+  @@index([studentId, courseId])
+}
+
+model Grade {
+  id                 String   @id @default(cuid())
+  studentId          String
+  courseId           String
+  internalMarks      Float?
+  midtermMarks       Float?
+  practicalMarks     Float?
+  endSemMarks        Float?
+  finalGrade         String?
+  isLocked           Boolean  @default(false)
+  lockedAt           DateTime?
+  lockedBy           String?
+  lastEditedBy       String?
+  editReason         String?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  student            Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  course             Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@unique([studentId, courseId])
+  @@index([studentId])
+  @@index([courseId])
+}
+
+model FeePayment {
+  id             String        @id @default(cuid())
+  studentId      String
+  amount         Float
+  description    String
+  status         FeeStatus
+  dueDate        DateTime?
+  paidAt         DateTime?
+  razorpayOrderId String?
+  razorpayPaymentId String?
+  createdAt      DateTime      @default(now())
+
+  student        Student       @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@index([studentId])
+}
+
+// ─────────────────────────────────────────────
+// LIBRARY
+// ─────────────────────────────────────────────
+
+model Book {
+  id          String     @id @default(cuid())
+  title       String
+  isbn        String     @unique
+  authors     String[]
+  publisher   String?
+  edition     String?
+  subject     String?
+  status      BookStatus @default(AVAILABLE)
+  isArchived  Boolean    @default(false)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  loans       BookLoan[]
+
+  @@index([isbn])
+  @@index([status])
+}
+
+model LibraryAccount {
+  id               String    @id @default(cuid())
+  studentId        String    @unique
+  isBlocked        Boolean   @default(false)
+  blockReason      String?
+  totalFines       Float     @default(0)
+  createdAt        DateTime  @default(now())
+
+  student          Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  loans            BookLoan[]
+}
+
+model BookLoan {
+  id               String     @id @default(cuid())
+  bookId           String
+  studentId        String
+  libraryAccountId String
+  checkedOutAt     DateTime   @default(now())
+  dueDate          DateTime
+  returnedAt       DateTime?
+  status           LoanStatus @default(ACTIVE)
+  fineAmount       Float      @default(0)
+  fineWaived       Boolean    @default(false)
+  waivedReason     String?
+  checkedOutBy     String     // librarian userId
+  checkedInBy      String?    // librarian userId
+
+  book             Book           @relation(fields: [bookId], references: [id])
+  student          Student        @relation(fields: [studentId], references: [id])
+  libraryAccount   LibraryAccount @relation(fields: [libraryAccountId], references: [id])
+
+  @@index([studentId])
+  @@index([bookId])
+  @@index([status])
+}
+
+// ─────────────────────────────────────────────
+// CANTEEN
+// ─────────────────────────────────────────────
+
+model MenuCategory {
+  id        String     @id @default(cuid())
+  name      String     @unique
+  items     MenuItem[]
+}
+
+model MenuItem {
+  id           String       @id @default(cuid())
+  name         String
+  description  String?
+  price        Float
+  imageUrl     String?
+  categoryId   String
+  isAvailable  Boolean      @default(true)
+  isSoldOut    Boolean      @default(false)
+  isSpecial    Boolean      @default(false)
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  category     MenuCategory @relation(fields: [categoryId], references: [id])
+  orderItems   OrderItem[]
+
+  @@index([categoryId])
+}
+
+model CanteenOrder {
+  id                  String      @id @default(cuid())
+  userId              String
+  orderType           OrderType
+  status              OrderStatus @default(PLACED)
+  confirmationNumber  String      @unique @default(cuid())
+  qrCode              String?
+  totalAmount         Float
+  paymentStatus       PaymentStatus @default(PENDING)
+  razorpayOrderId     String?
+  razorpayPaymentId   String?
+  specialInstructions String?
+  placedAt            DateTime    @default(now())
+  updatedAt           DateTime    @updatedAt
+
+  user                User        @relation(fields: [userId], references: [id])
+  items               OrderItem[]
+
+  @@index([userId])
+  @@index([status])
+}
+
+model OrderItem {
+  id         String       @id @default(cuid())
+  orderId    String
+  menuItemId String
+  quantity   Int
+  unitPrice  Float
+  status     OrderStatus  @default(PLACED)
+  rejectionReason String?
+
+  order      CanteenOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  menuItem   MenuItem     @relation(fields: [menuItemId], references: [id])
+
+  @@index([orderId])
+}
+
+model CanteenSettings {
+  id        String   @id @default(cuid())
+  isOnline  Boolean  @default(true)
+  updatedAt DateTime @updatedAt
+  updatedBy String?
+}
+
+// ─────────────────────────────────────────────
+// WALLET & PAYMENTS
+// ─────────────────────────────────────────────
+
+model WalletTransaction {
+  id          String        @id @default(cuid())
+  userId      String
+  amount      Float
+  type        String        // CREDIT | DEBIT
+  description String
+  reference   String?
+  createdAt   DateTime      @default(now())
+
+  user        User          @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+}
+
+// ─────────────────────────────────────────────
+// AUDIT LOG
+// ─────────────────────────────────────────────
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  userId     String
+  action     String
+  entity     String
+  entityId   String?
+  metadata   Json?
+  ipAddress  String?
+  createdAt  DateTime @default(now())
+
+  user       User     @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([entity, entityId])
+  @@index([createdAt])
+}
+
+// ─────────────────────────────────────────────
+// NOTIFICATIONS
+// ─────────────────────────────────────────────
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  title     String
+  body      String
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([userId, isRead])
 }

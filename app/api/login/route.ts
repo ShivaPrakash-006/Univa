@@ -1,34 +1,57 @@
 import { NextResponse } from "next/server";
-import prisma from "@/lib/prisma";
+import { prisma } from "@/lib/prisma";
+import { comparePassword, signToken, getDashboardPath } from "@/lib/auth";
 
 export async function POST( req: Request ) {
-  const { id, passwd } = await req.json()
+  const { collegeId, password } = await req.json()
 
-  console.log(id)
-  console.log(passwd)
-  if (!id || !passwd) {
-      console.log("Hello")
+  if (!collegeId || !password) {
     return NextResponse.json(
-      { message: "Missing Fields" },
-      { status: 401 }
+      { message: "ID and Password are required" },
+      { status: 400 }
     )
   }
 
-  const user = await prisma.user.findUnique({where: { id:Number(id) }})
+  const user = await prisma.user.findUnique({where: { collegeId }})
 
-  if (!user) {
+  if (!user || !user.isActive) {
     return NextResponse.json(
       { message: "User not Found" },
-      { status: 401 }
+      { status: 400 }
     )
   }
 
-  if ( user.password !== passwd ) {
+  const valid = await comparePassword(password, user.passwordHash);
+  if ( !valid ) {
     return NextResponse.json(
       { message: "Wrong Password" },
-      { status: 401 }
+      { status: 400 }
     )
   }
 
-  return NextResponse.json({ ok: true })
+  const token = signToken({
+    userId: user.id,
+    collegeId: user.collegeId,
+    role: user.role,
+    name: user.name,
+  })
+
+  await prisma.user.update({
+    where: { id: user.id },
+    data: { lastLogin: new Date() },
+  })
+
+  const redirectTo = getDashboardPath(user.role)
+
+  const response = NextResponse.json({ redirectTo, role: user.role, name: user.name })
+  response.cookies.set('univa_token', token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
+    maxAge: 15 * 60, // 15 minutes
+    path: '/',
+  })
+
+  return response
+
 }
