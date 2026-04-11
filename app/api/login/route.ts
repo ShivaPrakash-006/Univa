@@ -1,9 +1,10 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { comparePassword, signToken, getDashboardPath } from "@/lib/auth";
+import { createAuditLog, ACTIONS } from '@/lib/audit'
 
-export async function POST( req: Request ) {
-  const { collegeId, password } = await req.json()
+export async function POST( request: Request ) {
+  const { collegeId, password } = await request.json()
 
   if (!collegeId || !password) {
     return NextResponse.json(
@@ -40,6 +41,16 @@ export async function POST( req: Request ) {
     where: { id: user.id },
     data: { lastLogin: new Date() },
   })
+
+  await createAuditLog({
+      userId: user.id,
+      action: ACTIONS.LOGIN,
+      entity: 'User',
+      entityId: user.id,
+      ipAddress: request.headers.get('x-forwarded-for') || 'unknown',
+
+  })
+
 
   const redirectTo = getDashboardPath(user.role)
 
