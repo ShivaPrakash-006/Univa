@@ -11,10 +11,28 @@ export default function AdminDashboard() {
     activeLoans: number;
     ordersToday: number;
     activeUsers: number;
-    recentLogs?: unknown[];
+    recentLogs: AuditLog[];
   };
 
-  const [stats, setStats] = useState<Stats | null>(null)
+  type AuditLog = {
+    id: string;
+    action: string;
+    entity: string;
+    createdAt: string; // or Date depending on API
+    user?: {
+      name?: string;
+    };
+  };
+
+  const [stats, setStats] = useState<Stats>({
+    students: 0,
+    professors: 0,
+    books: 0,
+    activeLoans: 0,
+    ordersToday: 0,
+    activeUsers: 0,
+    recentLogs: [],
+  })
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -124,7 +142,48 @@ export default function AdminDashboard() {
           </div>
         </div>
 
+        {/* Audit Logs */}
+        <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm">
+          <h2 className="text-sm font-semibold text-gray-900 mb-4">Recent Audit Logs</h2>
 
+          {stats?.recentLogs?.length > 0 ? (
+            <div className="space-y-2">
+              {stats.recentLogs.map((log: AuditLog) => (
+                <div
+                  key={log.id}
+                  className="flex items-start gap-3 py-2 border-b border-gray-100 last:border-0"
+                >
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs font-medium text-gray-800 truncate">
+                      {log.action}
+                    </p>
+                    <p className="text-xs text-gray-500">
+                      {log.user?.name} · {log.entity}
+                    </p>
+                  </div>
+
+                  <p className="text-xs text-gray-400 flex-shrink-0">
+                    {new Date(log.createdAt).toLocaleTimeString('en-IN', {
+                      hour: '2-digit',
+                      minute: '2-digit',
+                    })}
+                  </p>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-sm text-gray-500 text-center py-8">
+              No recent activity
+            </p>
+          )}
+
+          <Link
+            href="/dashboard/admin/audit"
+            className="text-xs text-red-600 hover:text-red-700 font-medium mt-3 block"
+          >
+            View full audit trail →
+          </Link>
+        </div>
       </div>
     </div>
   )
