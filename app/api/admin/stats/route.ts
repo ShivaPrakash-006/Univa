@@ -1,9 +1,9 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { requireAuth } from '@/lib/auth'
 import { Role } from '@prisma/client'
 
-async function handler() {
+async function handler(request: NextRequest) {
   const today = new Date()
   today.setHours(0, 0, 0, 0)
 

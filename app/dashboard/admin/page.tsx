@@ -18,7 +18,7 @@ export default function AdminDashboard() {
     id: string;
     action: string;
     entity: string;
-    createdAt: string; // or Date depending on API
+    createdAt: string;
     user?: {
       name?: string;
     };
