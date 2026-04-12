@@ -37,3 +37,11 @@ export function getDashboardPath(role: Role): string {
   }
   return paths[role]
 }
+
+export function verifyToken(token: string): TokenPayload | null {
+  try {
+    return jwt.verify(token, JWT_SECRET) as TokenPayload
+  } catch {
+    return null
+  }
+}
