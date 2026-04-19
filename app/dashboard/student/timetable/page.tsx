@@ -154,7 +154,7 @@ export default function TimetablePage() {
 
                       {slot.room && (
                         <span className="text-xs text-gray-600">
-                          📍 {slot.room}
+                          {slot.room}
                         </span>
                       )}
                     </div>
