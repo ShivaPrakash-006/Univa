@@ -323,7 +323,7 @@ model BookLoan {
   checkedOutBy     String     // librarian userId
   checkedInBy      String?    // librarian userId
 
-  book             Book           @relation(fields: [bookId], references: [id])
+  book             Book           @relation(fields: [bookId], references: [isbn])
   student          Student        @relation(fields: [studentId], references: [id])
   libraryAccount   LibraryAccount @relation(fields: [libraryAccountId], references: [id])
 

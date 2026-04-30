@@ -158,7 +158,6 @@ export default function FeesPage() {
             userName={user?.name}
             userEmail={user?.email}
             label="Top-up Wallet"
-            className="w-full py-2.5 bg-red-500 text-white text-sm font-semibold rounded-lg hover:bg-red-600 transition-all"
             onSuccess={handleWalletTopupSuccess}
           />
         )}

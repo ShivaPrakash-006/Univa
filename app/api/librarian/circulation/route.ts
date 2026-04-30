@@ -13,7 +13,7 @@ async function postHandler(request: NextRequest, _: any, user: any) {
   const { bookId, studentCollegeId } = await request.json()
 
   const [book, studentUser] = await Promise.all([
-    prisma.book.findUnique({ where: { id: bookId } }),
+    prisma.book.findUnique({ where: { isbn: bookId } }),
     prisma.user.findUnique({
       where: { collegeId: studentCollegeId },
       include: { student: { include: { libraryAccount: true } } },
@@ -42,7 +42,7 @@ async function postHandler(request: NextRequest, _: any, user: any) {
         checkedOutBy: user.userId,
       },
     }),
-    prisma.book.update({ where: { id: bookId }, data: { status: 'ON_LOAN' } }),
+    prisma.book.update({ where: { isbn: bookId }, data: { status: 'ON_LOAN' } }),
   ])
 
   await createAuditLog({
@@ -85,7 +85,7 @@ async function putHandler(request: NextRequest, _: any, user: any) {
         checkedInBy: user.userId,
       },
     }),
-    prisma.book.update({ where: { id: loan.bookId }, data: { status: 'AVAILABLE' } }),
+    prisma.book.update({ where: { isbn: loan.bookId }, data: { status: 'AVAILABLE' } }),
     ...(fineAmount > 0 && !waiveFine
       ? [
           prisma.libraryAccount.update({

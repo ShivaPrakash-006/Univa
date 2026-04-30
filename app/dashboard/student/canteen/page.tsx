@@ -266,7 +266,6 @@ export default function CanteenPage() {
                       userName={user?.name}
                       userEmail={user?.email}
                       label="Pay & Order"
-                      className="w-full py-2.5 bg-red-600 text-white text-sm font-semibold rounded-lg hover:bg-red-700 disabled:opacity-50 transition-all"
                       onSuccess={() => placeOrder()}
                     />
                   )}
