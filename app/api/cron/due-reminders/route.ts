@@ -1,7 +1,3 @@
-// src/app/api/cron/due-reminders/route.ts
-// Call this endpoint from a cron service (e.g. Vercel Cron, GitHub Actions) daily
-// Add CRON_SECRET to .env and set the Authorization header accordingly
-
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { sendBookDueReminder } from '@/lib/email'

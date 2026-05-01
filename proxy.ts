@@ -1,4 +1,3 @@
-// src/middleware.ts
 import { NextRequest, NextResponse } from 'next/server'
 import { verifyToken, getDashboardPath } from '@/lib/auth'
 

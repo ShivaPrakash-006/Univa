@@ -1,4 +1,3 @@
-// src/components/shared/PaymentButton.tsx
 'use client'
 
 import { useState } from 'react'

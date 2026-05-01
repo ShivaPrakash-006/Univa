@@ -1,4 +1,3 @@
-// src/types/index.ts
 import { Role, OrderStatus, BookStatus, AttendanceStatus, FeeStatus, PaymentStatus } from '@prisma/client'
 
 export type { Role, OrderStatus, BookStatus, AttendanceStatus, FeeStatus, PaymentStatus }
